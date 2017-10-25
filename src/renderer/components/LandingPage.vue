@@ -11,9 +11,9 @@
       </div>
       <div class="right-side">
         <div class="doc">
-          <div class="title">Current Folder:  {{ currentFolder }}</div>
+          <div class="title">Current Folder: {{ currentFolder }}</div>
           <pre>{{ files.join(' \n - ') }}
-          </pre>
+            </pre>
           <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
         </div>
         <div class="doc">
@@ -71,16 +71,16 @@ export default {
       console.info(JSON.stringify(result, '', 2))
       const color = new cv.Vec(1, 55, 20)
       let thickness = 2
-      ;[minLoc, maxLoc].forEach(({ x, y }) => {
-        img.drawRectangle(
-          new cv.Point(x, y),
-          new cv.Point(x + 40, y + 40),
-          color,
-          {
-            thickness
-          }
-        )
-      })
+        ;[minLoc, maxLoc].forEach(({ x, y }) => {
+          img.drawRectangle(
+            new cv.Point(x, y),
+            new cv.Point(x + 40, y + 40),
+            color,
+            {
+              thickness
+            }
+          )
+        })
 
       const matRGBA =
         img.channels === 1
@@ -118,12 +118,10 @@ body {
 }
 
 #wrapper {
-  background: radial-gradient(
-    ellipse at top left,
-    rgba(255, 255, 255, 1) 40%,
-    rgba(229, 229, 229, 0.9) 100%
-  );
-  height: 100vh;
+  background: radial-gradient( ellipse at top left,
+  rgba(255, 255, 255, 1) 40%,
+  rgba(229, 229, 229, 0.9) 100%);
+  min-height: 100vh;
   padding: 60px 80px;
   width: 100vw;
 }
@@ -139,7 +137,7 @@ main {
   justify-content: space-between;
 }
 
-main > div {
+main>div {
   flex-basis: 50%;
 }
 

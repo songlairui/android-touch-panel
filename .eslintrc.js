@@ -8,14 +8,12 @@ module.exports = {
     browser: true,
     node: true
   },
-  extends: 'standard',
+  extends: 'prettier',
   globals: {
     __static: true
   },
-  plugins: [
-    'html'
-  ],
-  'rules': {
+  plugins: ['html'],
+  rules: {
     // allow paren-less arrow functions
     'arrow-parens': 0,
     'space-before-function-paren': 0,
