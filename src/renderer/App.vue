@@ -5,6 +5,11 @@
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  height: 100%;
+}
+
+.layout>div {
+  height: 100%;
 }
 
 .layout-breadcrumb {
@@ -14,9 +19,10 @@
 .layout-content {
   min-height: 200px;
   margin: 15px;
-  overflow: hidden;
+  overflow: auto;
   background: #fff;
   border-radius: 4px;
+  flex: 1
 }
 
 .layout-content-main {
@@ -41,7 +47,7 @@
 
 .layout-logo-left {
   width: 90%;
-  height: 30px;
+  /* height: 30px; */
   background: #5b6270;
   border-radius: 3px;
   margin: 15px auto;
@@ -58,37 +64,41 @@
 .ivu-col {
   transition: width .2s ease-in-out;
 }
+
+.flexVcol {
+  display: flex;
+  flex-flow: column;
+}
 </style>
 <template>
   <div class="layout" :class="{'layout-hide-text': spanLeft < 5}">
     <Row type="flex">
       <Col :span="spanLeft" class="layout-menu-left">
-      <Menu active-name="1" theme="dark" width="auto">
-        <div class="layout-logo-left"></div>
-        <MenuItem name="1">
+      <Menu active-name="1" theme="dark" width="auto" @on-select='menuClick'>
+        <div class="layout-logo-left">
+          <Button type="text" @click="toggleClick">
+            <Icon type="navicon" size="32"></Icon>
+          </Button>
+        </div>
+        <MenuItem name="canvas-try" :to="{name:'canvas-try'}">
         <Icon type="ios-navigate" :size="iconSize"></Icon>
-        <span class="layout-text">选项 1</span>
+        <span class="layout-text">canvas</span>
         </MenuItem>
-        <MenuItem name="2">
-        <Icon type="ios-keypad" :size="iconSize"></Icon>
-        <span class="layout-text">选项 2</span>
-        </MenuItem>
-        <MenuItem name="3">
+        <MenuItem name="form-try">
         <Icon type="ios-analytics" :size="iconSize"></Icon>
-        <span class="layout-text">选项 3</span>
+        <span class="layout-text">Form</span>
+        </MenuItem>
+        <MenuItem name="opencv-try">
+        <Icon type="ios-keypad" :size="iconSize"></Icon>
+        <span class="layout-text">OpenCV</span>
         </MenuItem>
       </Menu>
       </Col>
-      <Col :span="spanRight">
-      <div class="layout-header">
-        <Button type="text" @click="toggleClick">
-          <Icon type="navicon" size="32"></Icon>
-        </Button>
-      </div>
+      <Col :span="spanRight" class='flexVcol'>
       <div class="layout-breadcrumb">
         <Breadcrumb>
-          <BreadcrumbItem href="#">首页</BreadcrumbItem>
-          <BreadcrumbItem href="#">应用中心</BreadcrumbItem>
+          <BreadcrumbItem href="/">首页</BreadcrumbItem>
+          <!-- <BreadcrumbItem href="#">应用中心</BreadcrumbItem> -->
           <BreadcrumbItem>某应用</BreadcrumbItem>
         </Breadcrumb>
       </div>
@@ -108,8 +118,8 @@
 export default {
   data() {
     return {
-      spanLeft: 5,
-      spanRight: 19
+      spanLeft: 2,
+      spanRight: 22
     }
   },
   computed: {
@@ -126,6 +136,9 @@ export default {
         this.spanLeft = 5
         this.spanRight = 19
       }
+    },
+    menuClick(name) {
+      this.$router.push({ name: name })
     }
   }
 }
