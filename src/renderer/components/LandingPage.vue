@@ -1,6 +1,7 @@
 <template>
   <div id="wrapper">
     <img id="logo" src="~@/assets/logo.png" alt="electron-vue">
+    <blockquote>[img.src = ]{{ src }}</blockquote>
     <canvas id='test' width="400" height="400"></canvas>
     <main>
       <div class="left-side">
@@ -13,7 +14,7 @@
         <div class="doc">
           <div class="title">Current Folder: {{ currentFolder }}</div>
           <pre>{{ files.join(' \n - ') }}
-            </pre>
+                    </pre>
           <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
         </div>
         <div class="doc">
@@ -42,7 +43,8 @@ export default {
       currentFolder: ' - ',
       files: [],
       fs: null,
-      path: null
+      path: null,
+      src: ''
     }
   },
   created() {
@@ -51,6 +53,8 @@ export default {
     // this.path = this.$electron.remote.require('path')
     this.currentFolder = path.resolve('./')
     this.files = fs.readdirSync('./')
+    // this.src = 'aaa'
+    this.src = global.location.href
   },
   methods: {
     open(link) {
