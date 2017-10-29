@@ -92,6 +92,10 @@
         <Icon type="ios-keypad" :size="iconSize"></Icon>
         <span class="layout-text">OpenCV</span>
         </MenuItem>
+        <MenuItem name="screen-try">
+        <Icon type="android-phone-landscape" :size="iconSize"></Icon>
+        <span class="layout-text">Screen</span>
+        </MenuItem>
       </Menu>
       </Col>
       <Col :span="spanRight" class='flexVcol'>

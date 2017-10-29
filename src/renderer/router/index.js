@@ -26,6 +26,11 @@ export default new Router({
       component: require('@/components/Try/Form').default
     },
     {
+      path: '/screen',
+      name: 'screen-try',
+      component: require('@/components/Try/Screen').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
