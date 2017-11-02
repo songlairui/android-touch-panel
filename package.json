@@ -64,6 +64,7 @@
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-prettier": "^2.3.1",
     "iview": "^2.5.1",
+    "lodash": "^4.17.4",
     "minicap": "^0.1.0",
     "minicap-prebuilt": "^2.1.0",
     "minitouch-prebuilt": "^1.0.0",

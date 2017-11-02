@@ -5,9 +5,17 @@
 }
 
 .screen {
-  border: thin solid plum;
+  /* border: thin solid plum; */
   border-radius: 3px;
   max-width: 100%;
+}
+
+.coverage {
+  position: absolute;
+  top: .5em;
+  left: .5em;
+  z-index: 100;
+  background: rgba(123, 223, 55, .1)
 }
 </style>
 
@@ -15,7 +23,8 @@
   div
     Row(type='flex')
       Col.stage(style={flex:'1'})
-        canvas.screen(v-screen='screendata' @mousedown='mouseAct'  @mouseup='mouseAct'  @mousemove='mouseAct' :width='canvasWidth'  :height='canvasHeight')
+        canvas.screen(v-screen='screendata' :width='canvasWidth'  :height='canvasHeight')
+        canvas.coverage(v-coverage='cursorData' @mousedown='mouseAct'  @mouseup='mouseAct'  @mousemove='mouseAct' :width='canvasBoundary.width'  :height='canvasBoundary.height')
       Col
         Row
           Dropdown(@on-select='selectDevice')
@@ -54,6 +63,7 @@
 <script>
 import { tagDevice, listDevices, checkRunning, startMinicap, getRotatorMonitor, closeRotatorMonitor } from '@/util/adbkit.js'
 import { liveStream } from '@/util/getStream.js'
+import _ from 'lodash'
 
 export default {
   name: 'screen',
@@ -72,10 +82,18 @@ export default {
       canvasHeight: 100,
       ratio: 1,
       canvasBoundary: {
-        x: 0, y: 0, width: 1
+        x: 0, y: 0, width: 100, height: 100
       },
       flag: 'NONE',
-      mode: 0
+      mode: 0,
+      cursorData: {
+        cursor: {
+          x: 10, y: 10
+        },
+        markLayer: [
+          [{ cross: [250, 250] }]
+        ]
+      }
     }
   },
   created() {
@@ -86,7 +104,7 @@ export default {
       theend: false
     }
     listDevices().then(devices => {
-      this.devices = devices.concat({ name: 'TEST' })
+      this.devices = devices //.concat({ name: 'TEST' })
       console.info({ devices })
     })
   },
@@ -94,6 +112,8 @@ export default {
     await this.startMinicap()
     await this.checkProcess()
     await this.monitorRotate()
+    window.onresize = _.debounce(this.calcTouchParams, 500)
+    this.calcTouchParams()
   },
   async destroyed() {
     await closeRotatorMonitor()
@@ -102,7 +122,7 @@ export default {
 
   directives: {
     screen(el, binding, vNode) {
-      // console.info('on message')
+      // console.info('[canvas Screen]')
       if (!binding.value) return
       // console.info('render an image ---- ', +new Date())
       let BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
@@ -123,9 +143,53 @@ export default {
       }
       var u = URL.createObjectURL(blob)
       img.src = u
+    },
+    coverage(el, binding, vNode) {
+      // console.info('[canvas] coverage')
+      if (!binding.value) return
+      var ctx = el.getContext('2d')
+      let { cursor } = binding.value
+      ctx.clearRect(0, 0, el.width, el.height)
+      ctx.beginPath()
+      ctx.moveTo(0, cursor.y)
+      ctx.lineTo(el.width, cursor.y)
+      ctx.stroke();
+
+
+      ctx.beginPath();
+      ctx.moveTo(cursor.x, 0)
+      ctx.lineTo(cursor.x, el.height)
+      ctx.stroke();
+
+
+      ctx.font = '20px Microsoft YaHei';
+      ctx.fillStyle = '#000000';
+      ctx.fillText(`${cursor.x},${cursor.y}`, cursor.x + (cursor.x + 100 < el.width ? 5 : -100), cursor.y + (cursor.y + 50 > el.height ? -15 : +35));
+    }
+  },
+
+  watch: {
+    canvasWidth: function(newValue, oldValue) {
+      // console.info({ newValue, oldValue })
+      this.calcTouchParams()
     }
   },
   methods: {
+
+    calcTouchParams() {
+      this.$nextTick(function() {
+        let targetEl = this.$el.querySelector('canvas.screen')
+        this.canvasBoundary = targetEl.getBoundingClientRect()
+        console.info('new Boundary Data Settled')
+        let width = this.canvasBoundary.width || 1
+        this.ratio = this.canvasWidth * 3 / Math.ceil(width)
+        console.info(`
+        CANVAS EL: width - ${width}
+        IMG width: ${this.canvasWidth}
+        ratio: ${this.ratio}
+      `)
+      })
+    },
     selectDevice(idx) {
       if (this.devices[idx]) {
         tagDevice(this.devices[idx])
@@ -171,8 +235,52 @@ export default {
       this.mark.theend = true
       this.mark.stream && this.mark.stream.end()
     },
-    mouseAct() {
-
+    mouseAct(e) {
+      // console.info(e, this.canvasBoundary)
+      // return
+      let x = Math.round(e.x - this.canvasBoundary.left)
+      let y = Math.round(e.y - this.canvasBoundary.top)
+      this.cursorData.cursor = { x, y }
+      x = this.ratio * x
+      y = this.ratio * y
+      let hit = []
+      switch (e.type) {
+        case 'mousemove':
+          hit[0] = {
+            type: 'touch',
+            data: {
+              act: 'm',
+              x,
+              y
+            }
+          }
+          break
+        case 'mousedown':
+          hit[0] = {
+            type: 'touch',
+            data: {
+              act: 'r'
+            }
+          }
+          hit[1] = {
+            type: 'touch',
+            data: {
+              act: 'd',
+              x,
+              y
+            }
+          }
+          break
+        case 'mouseup':
+          hit[0] = {
+            type: 'touch',
+            data: {
+              act: 'u'
+            }
+          }
+          this.$Message.info(`click @ ${x} ${y}`)
+          break
+      }
     }
   }
 }

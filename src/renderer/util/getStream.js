@@ -159,7 +159,7 @@ export async function liveStream({ device, mark, cb }) {
             // if (lastTimeStamp) {
             if (
               !mark.lastTimeStamp ||
-              currentTimeStamp - mark.lastTimeStamp > 10
+              currentTimeStamp - mark.lastTimeStamp > 30
             ) {
               // console.info('| delta > 30 |')
               mark.lastTimeStamp = currentTimeStamp

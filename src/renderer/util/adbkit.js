@@ -45,7 +45,7 @@ export async function startMinicap({ orientation }) {
     'LD_LIBRARY_PATH=%s exec %s %s',
     path.dirname('/data/local/tmp/minicap.so'),
     '/data/local/tmp/minicap',
-    `-P 540x960@360x640/${orientation} -S -Q 50`
+    `-P 1080x1920@360x640/${orientation} -S -Q 50`
   )
 
   let result = await client.shell(device.id, command).then(out => {
