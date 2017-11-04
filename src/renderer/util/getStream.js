@@ -197,3 +197,40 @@ export async function liveStream({ device, mark, cb }) {
   })
   return stream
 }
+
+export async function getTouchSocket({ mark }) {
+  console.info('Got a client')
+  let device = (await listDevices(client))[0]
+  if (!device) {
+    console.info('no devices')
+    return
+  } else {
+    console.info('device got')
+  }
+  var { err, stream } = await client
+    .openLocal(device.id, 'localabstract:minitouch')
+    .then(out => ({ stream: out }))
+    .catch(err => ({ err }))
+  if (err) {
+    console.info('miniTouch socket error, Retry within .2 second!!!')
+    await new Promise(resolve => setTimeout(resolve, 200))
+    // mark.touchSocket =
+    return await getTouchSocket({ mark })
+  }
+  stream.on('error', function() {
+    console.error('Be sure to run `adb forward tcp:1313 localabstract:minicap`')
+    process.exit(1)
+  })
+
+  stream.on('readable', tryRead)
+  function tryRead() {
+    var chunk = stream.read()
+    // console.info('[chunk]', chunk.toString())
+  }
+  stream.on('close', async () => {
+    console.info('socket Stream Closed ')
+    mark.touchSocket = null
+    mark.touchSocket = await getTouchSocket({ mark })
+  })
+  return stream
+}
