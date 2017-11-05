@@ -22,6 +22,15 @@
   z-index: 100;
   background: rgba(123, 223, 55, .1)
 }
+
+.step {
+  padding: .5em
+}
+
+.current {
+  background: red;
+  color: green
+}
 </style>
 
 <template lang="pug">
@@ -73,24 +82,28 @@
         Row
           ButtonGroup(vertical)
             Button(type="ghost" icon="ios-color-filter-outline" @click='setout') 执行序列
-            Button(type="ghost" icon="ios-color-filter-outline" @click='tryClick') tryClick
-            Button(type="primary" @click="modal1 = true") 配置序列
-            Modal( v-model="modal1" title="配置序列")
-              Row(v-for='sect in sequence')
-                Col
-                  | {{ sect.act }}
-                Col
-                  Slider(v-model="sect.wait" :max='2000' :min='50' :step='5')
+            //- Button(type="ghost" icon="ios-color-filter-outline" @click='tryClick') tryClick
+            Button(type="ghost" icon="ios-color-filter-outline" @click='log') console.log sequenct
+        
         Card(:bordered=false)
           pre.
             PDI_minicap: {{ deviceStatus.PID_minicap.join(',') }} 
             旋转： {{ deviceStatus.orientation }} 
             区域： {{ rect }}
+    Row(type='flex')
+      Col.step(v-for='(sect,idx) in sequence' :key='idx' :class="{current:idx === sequenceCurrentIdx}")
+        Select(v-model="sect.act" style="width:100px")
+          Option(v-for="(v,k) in act" :value="k" :key="k") {{ k }}
+        InputNumber(v-model="sect.wait" :max='20000' :min='5' :step='5')
+      Col
+        Button(type="primary" shape="circle" icon="plus-round" @click='addSect')
 </template>
 <script>
 import { tagDevice, listDevices, checkRunning, startMinicap, startMiniTouch, getRotatorMonitor, closeRotatorMonitor } from '@/util/adbkit.js'
 import { liveStream, getTouchSocket } from '@/util/getStream.js'
 import _ from 'lodash'
+import * as conf from '@/util/level1.json'
+// console.info({ conf })
 
 function drawCross(point, ctx, el) {
   let { x, y } = point
@@ -108,9 +121,9 @@ function drawCross(point, ctx, el) {
 function clickPoint(point, socket, orientation = '90', ratio = 1, u) {
   if (!point || !socket) return console.info('unable click')
   let { x, y } = point
-  console.info('click @ ', x, y)
+    // console.info('click @ ', x, y)
     ;[x, y] = [x, y].map(n => Math.floor(ratio * n))
-  console.info('click @ ', x, y)
+  // console.info('click @ ', x, y)
   switch (orientation) {
     case '270':
       ;[x, y] = [y, 1920 - x]
@@ -179,59 +192,8 @@ export default {
         color: [324, 528],
         jump: [1512, 528]
       },
-      sequence0: [{
-        act: 'pause',
-        wait: 400
-      }, {
-        act: 'pause',
-        wait: 250
-      }, {
-        act: 'start',
-        wait: 250
-      }, {
-        act: 'color',
-        wait: 250
-      }, {
-        act: 'color',
-        wait: 100
-      }, {
-        act: 'jump',
-        wait: 100
-      }, {
-        act: 'color',
-        wait: 360
-      }, {
-        act: 'color',
-        wait: 100
-      }],
-      sequence: [{
-        act: 'jump',
-        wait: 100
-      }, {
-        act: 'color',
-        wait: 360
-      }, {
-        act: 'color',
-        wait: 100
-      }, {
-        act: 'jump',
-        wait: 100
-      }, {
-        act: 'color',
-        wait: 360
-      }, {
-        act: 'color',
-        wait: 100
-      }, {
-        act: 'jump',
-        wait: 100
-      }, {
-        act: 'color',
-        wait: 360
-      }, {
-        act: 'color',
-        wait: 100
-      }]
+      sequenceCurrentIdx: 0,
+      sequence: conf
     }
   },
   created() {
@@ -330,21 +292,39 @@ export default {
     }
   },
   methods: {
+    log() {
+      console.info(this)
+      let result = { sequence: this.sequence }
+      console.info(result)
+      console.info(JSON.stringify(result, '', 2))
+    },
+    addSect() {
+      this.sequence.push({
+        act: 'pause',
+        wait: 10
+      })
+    },
     async tryClick() {
       clickPoint(this.cursorData.points.clickin, this.mark.touchSocket, this.deviceStatus.orientation, this.ratio)
     },
     async setout() {
       console.info('set out to do this sequenct')
       if (!this.mark.touchSocket) return this.$Message.error('no TouchSocket')
-      for (let { act, wait } of this.sequence0) {
+      // for (let { act, wait } of this.sequence0) {
+      //   wait = wait || 100
+      //   let [x, y] = this.act[act]
+      //   clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act === 'jump')
+      //   await new Promise(r => setTimeout(r, wait))
+      // }
+      let lastact = ''
+      for (let [idx, { act, wait }] of this.sequence.entries()) {
+        if (act !== 'start' && act !== 'pause' && lastact === 'pause') {
+          break
+        }
+        lastact = act
         wait = wait || 100
         let [x, y] = this.act[act]
-        clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act === 'jump')
-        await new Promise(r => setTimeout(r, wait))
-      }
-      for (let { act, wait } of this.sequence) {
-        wait = wait || 100
-        let [x, y] = this.act[act]
+        this.sequenceCurrentIdx = idx
         clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act === 'jump')
         await new Promise(r => setTimeout(r, wait))
       }
