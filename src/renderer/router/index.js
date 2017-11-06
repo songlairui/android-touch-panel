@@ -31,6 +31,11 @@ export default new Router({
       component: require('@/components/Try/Screen').default
     },
     {
+      path: '/chameleon',
+      name: 'chameleon-run',
+      component: require('@/components/Try/Chameleon').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

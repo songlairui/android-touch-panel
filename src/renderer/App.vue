@@ -26,7 +26,7 @@
 }
 
 .layout-content-main {
-   padding: 10px; 
+  padding: 10px;
   height: 100%;
 }
 
@@ -96,6 +96,10 @@
         <MenuItem name="screen-try">
         <Icon type="android-phone-landscape" :size="iconSize"></Icon>
         <span class="layout-text">Screen</span>
+        </MenuItem>
+        <MenuItem name="chameleon-run">
+        <Icon type="android-phone-landscape" :size="iconSize"></Icon>
+        <span class="layout-text">ChameleonRun</span>
         </MenuItem>
       </Menu>
       </Col>

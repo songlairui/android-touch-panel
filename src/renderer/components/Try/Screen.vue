@@ -28,8 +28,8 @@
 }
 
 .current {
-  background: red;
-  color: green
+  border: thin solid red;
+  /* color: green */
 }
 </style>
 
@@ -94,7 +94,7 @@
       Col.step(v-for='(sect,idx) in sequence' :key='idx' :class="{current:idx === sequenceCurrentIdx}")
         Select(v-model="sect.act" style="width:100px")
           Option(v-for="(v,k) in act" :value="k" :key="k") {{ k }}
-        InputNumber(v-model="sect.wait" :max='20000' :min='5' :step='5')
+        InputNumber(v-model="sect.wait" :max='20000' :min='2' :step='5')
       Col
         Button(type="primary" shape="circle" icon="plus-round" @click='addSect')
 </template>
@@ -118,7 +118,7 @@ function drawCross(point, ctx, el) {
 }
 
 
-function clickPoint(point, socket, orientation = '90', ratio = 1, u) {
+function clickPoint(point, socket, orientation = '90', ratio = 1, act) {
   if (!point || !socket) return console.info('unable click')
   let { x, y } = point
     // console.info('click @ ', x, y)
@@ -135,10 +135,11 @@ function clickPoint(point, socket, orientation = '90', ratio = 1, u) {
       ;[x, y] = [1080 - x, 1920 - y]
       break
   }
+  let u = act === 'jump'
   socket.write(`r\n`)
-  socket.write(`d ${u ? '1' : '0'} ${x} ${y} 50\n`)
   socket.write(`c\n`)
-  // await new Promise(r => setTimeout(r, 10))
+  socket.write(`d ${u ? '1' : '0'} ${x} ${y} ${u ? '20' : '60'}\n`)
+  socket.write(`c\n`)
   socket.write(`u ${u ? '1' : '0'}\n`)
   socket.write(`c\n`)
 }
@@ -319,13 +320,14 @@ export default {
       let lastact = ''
       for (let [idx, { act, wait }] of this.sequence.entries()) {
         if (act !== 'start' && act !== 'pause' && lastact === 'pause') {
+          console.info('break')
           break
         }
         lastact = act
         wait = wait || 100
         let [x, y] = this.act[act]
         this.sequenceCurrentIdx = idx
-        clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act === 'jump')
+        clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act)
         await new Promise(r => setTimeout(r, wait))
       }
     },
