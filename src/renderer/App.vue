@@ -98,7 +98,11 @@
         <span class="layout-text">Screen</span>
         </MenuItem>
         <MenuItem name="chameleon-run">
-        <Icon type="android-phone-landscape" :size="iconSize"></Icon>
+        <Icon type="code-working" :size="iconSize"></Icon>
+        <span class="layout-text">ChameleonRun</span>
+        </MenuItem>
+        <MenuItem name="decode-event">
+        <Icon type="code" :size="iconSize"></Icon>
         <span class="layout-text">ChameleonRun</span>
         </MenuItem>
       </Menu>

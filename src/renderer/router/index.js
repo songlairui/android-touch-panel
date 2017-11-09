@@ -36,6 +36,11 @@ export default new Router({
       component: require('@/components/Try/Chameleon').default
     },
     {
+      path: '/decode/event',
+      name: 'decode-event',
+      component: require('@/components/Try/DecodeEvent').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

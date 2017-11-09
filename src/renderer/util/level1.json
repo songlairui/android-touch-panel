@@ -1,34 +1,98 @@
 [
   {
     "act": "pause",
-    "wait": 320
+    "wait": 200
   },
   {
     "act": "pause",
-    "wait": 105
+    "wait": 300
   },
   {
     "act": "start",
+    "wait": 400
+  },
+  {
+    "act": "color",
+    "wait": 95
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 5
+  },
+  {
+    "act": "color",
+    "wait": 360
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 5
+  },
+  {
+    "act": "color",
+    "wait": 360
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 5
+  },
+  {
+    "act": "color",
+    "wait": 360
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 5
+  },
+  {
+    "act": "color",
+    "wait": 360
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 375
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
+    "wait": 5
+  },
+  {
+    "act": "color",
+    "wait": 360
+  },
+  {
+    "act": "color",
+    "wait": 2
+  },
+  {
+    "act": "jump",
     "wait": 350
   },
   {
     "act": "color",
-    "wait": 140
-  },
-  {
-    "act": "color",
-    "wait": 3
-  },
-  {
-    "act": "jump",
-    "wait": 5
-  },
-  {
-    "act": "color",
-    "wait": 270
-  },
-  {
-    "act": "color",
     "wait": 2
   },
   {
@@ -36,71 +100,7 @@
     "wait": 5
   },
   {
-    "act": "color",
-    "wait": 280
-  },
-  {
-    "act": "color",
-    "wait": 2
-  },
-  {
-    "act": "jump",
-    "wait": 5
-  },
-  {
-    "act": "color",
-    "wait": 275
-  },
-  {
-    "act": "color",
-    "wait": 2
-  },
-  {
-    "act": "jump",
-    "wait": 320
-  },
-  {
-    "act": "color",
-    "wait": 2
-  },
-  {
-    "act": "jump",
-    "wait": 5
-  },
-  {
-    "act": "color",
-    "wait": 300
-  },
-  {
-    "act": "color",
-    "wait": 2
-  },
-  {
-    "act": "jump",
-    "wait": 330
-  },
-  {
-    "act": "color",
-    "wait": 2
-  },
-  {
-    "act": "jump",
-    "wait": 5
-  },
-  {
-    "act": "color",
-    "wait": 290
-  },
-  {
-    "act": "color",
-    "wait": 5
-  },
-  {
-    "act": "jump",
-    "wait": 5
-  },
-  {
-    "act": "color",
+    "act": "pause",
     "wait": 180
   },
   {

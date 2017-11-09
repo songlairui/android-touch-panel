@@ -18,11 +18,14 @@
 }
 
 .step {
-  padding: .5em
+  padding: .5em;
+  margin: 3px;
+  border-radius: 3px;
+  border: thin solid transparent;
 }
 
 .jump {
-  background: lightcoral
+  background: lightgreen
 }
 
 .color {
@@ -30,7 +33,7 @@
 }
 
 .current {
-  border: thin solid green;
+  border: thin solid red;
   /* color: green */
 }
 </style>
@@ -43,9 +46,9 @@
           Col.step(v-for='(sect,idx) in sequence' :key='idx' :class="{current:idx === sequenceCurrentIdx,[sect.act]:true}")
             Select(v-model="sect.act" style="width:100px")
               Option(v-for="(v,k) in act" :value="k" :key="k") {{ k }}
-            InputNumber(v-model="sect.wait" :max='20000' :min='2' :step='5')
-          Col
-            Button(type="primary" shape="circle" icon="plus-round" @click='addSect')
+            InputNumber(v-model="sect.wait" :max='20000' :min='1' :step='5')
+            Button(type="primary" shape="circle" icon="plus-round" @click='addSect(idx)')
+            Button(type="primary" shape="circle" icon="minus-round" @click='removeSect(idx)')
       Col
         Row
           Dropdown(@on-select='selectDevice')
@@ -67,12 +70,14 @@
         Row
           ButtonGroup(vertical)
             Button(type="ghost" icon="ios-color-filter-outline" @click='setout') 执行序列
+            i-switch(v-model="sequenceAct.tryStop")
+            //- Button(type="ghost" icon="ios-color-filter-outline" @click='setout') 取消执行序列
             //- Button(type="ghost" icon="ios-color-filter-outline" @click='tryClick') tryClick
             Button(type="ghost" icon="ios-color-filter-outline" @click='log') console.log sequenct
         
         Card(:bordered=false)
           pre.
-            PDI_minicap: {{ deviceStatus.PID_minicap.join(',') }} 
+            Pause: {{ sequenceAct.tryStop }} 
             旋转： {{ deviceStatus.orientation }} 
     
 </template>
@@ -105,7 +110,7 @@ function clickPoint(point, socket, orientation = '90', ratio = 1, act) {
   let u = act === 'jump'
   socket.write(`r\n`)
   socket.write(`c\n`)
-  socket.write(`d ${u ? '1' : '0'} ${x} ${y} ${u ? '20' : '60'}\n`)
+  socket.write(`d ${u ? '1' : '0'} ${x} ${y} ${u ? '10' : '60'}\n`)
   socket.write(`c\n`)
   socket.write(`u ${u ? '1' : '0'}\n`)
   socket.write(`c\n`)
@@ -158,7 +163,10 @@ export default {
         jump: [1512, 528]
       },
       sequenceCurrentIdx: 0,
-      sequence: conf
+      sequence: conf,
+      sequenceAct: {
+        tryStop: false
+      }
     }
   },
   created() {
@@ -191,25 +199,32 @@ export default {
       console.info(result)
       console.info(JSON.stringify(result, '', 2))
     },
-    addSect() {
-      this.sequence.push({
+    addSect(idx) {
+      idx = idx || this.sequence.length - 1
+      this.sequence.splice(idx + 1, 0, {
         act: 'pause',
         wait: 10
       })
     },
+    removeSect(idx) {
+      if (idx) {
+        this.sequence.splice(idx, 1)
+      }
+    },
     async setout() {
       console.info('set out to do this sequenct')
       if (!this.mark.touchSocket) return this.$Message.error('no TouchSocket')
-      // for (let { act, wait } of this.sequence0) {
-      //   wait = wait || 100
-      //   let [x, y] = this.act[act]
-      //   clickPoint({ x, y }, this.mark.touchSocket, this.deviceStatus.orientation, 1, act === 'jump')
-      //   await new Promise(r => setTimeout(r, wait))
-      // }
+      this.sequenceAct.tryStop = true
+      await new Promise(r => setTimeout(r, 500))
+      this.sequenceAct.tryStop = false
       let lastact = ''
       for (let [idx, { act, wait }] of this.sequence.entries()) {
         if (act !== 'start' && act !== 'pause' && lastact === 'pause') {
           console.info('break')
+          break
+        }
+        if (this.sequenceAct.tryStop) {
+          this.sequenceAct.tryStop = false
           break
         }
         lastact = act
