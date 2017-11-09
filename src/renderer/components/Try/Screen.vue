@@ -102,7 +102,7 @@
 import { tagDevice, listDevices, checkRunning, startMinicap, startMiniTouch, getRotatorMonitor, closeRotatorMonitor } from '@/util/adbkit.js'
 import { liveStream, getTouchSocket } from '@/util/getStream.js'
 import _ from 'lodash'
-import * as conf from '@/util/level1.json'
+import sequence from '@/util/level1.js'
 // console.info({ conf })
 
 function drawCross(point, ctx, el) {
@@ -194,7 +194,7 @@ export default {
         jump: [1512, 528]
       },
       sequenceCurrentIdx: 0,
-      sequence: conf
+      sequence
     }
   },
   created() {
