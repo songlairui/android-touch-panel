@@ -125,10 +125,13 @@ async function clickPoint(point, socket, orientation = '90', ratio = 1, act, dur
       ;[x, y] = [1080 - x, 1920 - y]
       break
   }
-  let u = act === 'jump'
+  let u = act in ['jump']
   let pointNum = 0
   switch (act) {
     case 'jump':
+    case 'ju':
+    case '--':
+    case 'mp':
       pointNum = 1;
       break;
     case 'color':
@@ -148,11 +151,20 @@ async function clickPoint(point, socket, orientation = '90', ratio = 1, act, dur
   if (duration) {
     await new Promise(resolve => setTimeout(resolve, +duration))
   }
+  if (act === '--') {
+    socket.write(`m ${pointNum} ${x} ${y} ${u ? '10' : '60'}\n`)
+    socket.write(`c\n`)
+    return
+  }
   // socket.write(`r\n`)
-  socket.write(`d ${pointNum} ${x} ${y} ${u ? '10' : '60'}\n`)
-  socket.write(`c\n`)
-  socket.write(`u ${pointNum}\n`)
-  socket.write(`c\n`)
+  if (act !== 'mp') {
+    socket.write(`d ${pointNum} ${x} ${y} ${u ? '10' : '60'}\n`)
+    socket.write(`c\n`)
+  }
+  if (act !== 'ju') {
+    socket.write(`u ${pointNum}\n`)
+    socket.write(`c\n`)
+  }
 }
 
 
@@ -201,6 +213,7 @@ export default {
         color: [324, 528],
         jump: [1512, 528],
         ju: [1512, 528],
+        "--": [1512, 528],
         mp: [1512, 528]
       },
       sequenceCurrentIdx: 0,
